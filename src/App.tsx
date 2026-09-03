@@ -72,8 +72,8 @@ function TripApp() {
         "system",
         "webmcp",
         s.supported
-          ? `registered ${s.toolCount} tools with document.modelContext — your agent is live`
-          : "no WebMCP agent detected — running in preview mode"
+          ? `registered ${s.toolCount} tools with document.modelContext — your agent is live${s.error ? ` (note: ${s.error})` : ""}`
+          : `no WebMCP agent detected — running in preview mode${s.error ? ` (${s.error})` : ""}`
       );
     });
     return () => {

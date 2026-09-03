@@ -475,17 +475,21 @@ export async function setupWebMCP(bridge: Bridge): Promise<WebMCPStatus> {
   if (typeof document === "undefined" || !("modelContext" in document)) {
     return { supported: false, toolCount: 0 };
   }
+  const tools = buildTools(bridge);
+  let toolCount = 0;
+  let error: string | undefined;
   try {
-    const tools = buildTools(bridge);
-    let toolCount = 0;
     for (const tool of tools) {
       await document.modelContext.registerTool(tool);
       toolCount++;
     }
-    return { supported: true, toolCount };
   } catch (err) {
-    return { supported: false, toolCount: 0, error: err instanceof Error ? err.message : String(err) };
+    error = err instanceof Error ? err.message : String(err);
   }
+  // If ANY tools landed in the registry, WebMCP is live — the agent can see
+  // and call them — even if a later registerTool promise rejected.
+  if (toolCount > 0) return { supported: true, toolCount, error };
+  return { supported: false, toolCount: 0, error };
 }
 
 // Re-export for the simulator / UI helpers
