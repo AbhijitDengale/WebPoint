@@ -62,7 +62,7 @@ export function BudgetForm() {
             name="budget"
             type="number"
             min={1}
-            step={5}
+            step={1}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="mt-0.5 w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm"
