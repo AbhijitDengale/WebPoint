@@ -3,7 +3,7 @@
 **Waypoint is a collaborative trip itinerary planner built for [The WebMCP Challenge](https://webmcp.devpost.com).**
 You plan in the UI. Your AI agent works **inside the same page** through [WebMCP](https://github.com/webmachinelearning/webmcp) tools — adding activities, fixing schedule conflicts, re-ordering days geographically, auditing your budget — while you watch every change land on your board in real time.
 
-> **Live demo:** _(`https://YOUR-DEPLOY-URL` — deploy steps below)_ · **Demo video:** _(YouTube link)_
+> **Live demo:** [https://abhijitdengale.github.io/WebPoint/](https://abhijitdengale.github.io/WebPoint/) · **Demo video:** _(YouTube link)_
 
 ---
 
