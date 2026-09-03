@@ -35,6 +35,11 @@ const PRESETS: Preset[] = [
     tool: "get_budget_summary",
     input: "{}",
   },
+  {
+    label: "💸 Raise budget to €150",
+    tool: "set_trip_budget",
+    input: '{ "budget": 150, "reason": "Adding a Sintra day trip — approved by the human." }',
+  },
 ];
 
 /**

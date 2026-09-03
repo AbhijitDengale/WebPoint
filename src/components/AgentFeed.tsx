@@ -15,7 +15,7 @@ export function AgentFeed() {
   const entries = [...state.feed].reverse().slice(0, 14);
 
   return (
-    <aside className="flex h-full min-h-0 w-full flex-col border-l border-slate-200 bg-white lg:w-[320px]">
+    <aside className="flex h-full min-h-0 flex-1 flex-col border-l border-slate-200 bg-white">
       <div className="border-b border-slate-100 px-4 py-3">
         <h2 className="text-sm font-bold text-slate-800">Shared activity</h2>
         <p className="text-[11px] text-slate-500">Human and agent actions on the same board, live.</p>

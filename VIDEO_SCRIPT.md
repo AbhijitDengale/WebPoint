@@ -32,7 +32,7 @@
 
 ### [2:20–2:50] — How it's built (screen: src/webmcp.ts briefly)
 
-> "Under the hood it's one honest file: seven tools registered with `document.modelContext.registerTool` — JSON-Schema inputs, and every mutation *returns the new schedule, remaining conflicts, and budget* so the agent self-corrects without extra calls. No backend, no API keys — the agent in your browser IS the AI. There's even a simulator so you can try the same tools in any browser."
+> "Under the hood it's one honest file: eight tools registered with `document.modelContext.registerTool` — JSON-Schema inputs, and every mutation *returns the new schedule, remaining conflicts, and budget* so the agent self-corrects without extra calls. Even the budget box is a real HTML form carrying the spec's declarative tool attributes — one app, both WebMCP APIs. No backend, no API keys — the agent in your browser IS the AI. There's even a simulator so you can try the same tools in any browser."
 
 ### [2:50–3:00] — Close
 

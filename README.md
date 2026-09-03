@@ -20,7 +20,7 @@ Existing trip planners are single-player. Backend MCP integrations bypass the pr
 
 **The moment that was impossible before WebMCP:** you lock your ✈️-arrived-late lunch at 13:30, tell your agent *"the tram and the walking tour overlap, fix Day 1 around my locked lunch"* — and the agent reads the schedule through `get_itinerary`, calls `update_activity`, and you watch the card slide to 11:30 on your screen. Neither a form nor a chatbot-alone can do that.
 
-## The seven WebMCP tools
+## The eight WebMCP tools — imperative *and* declarative
 
 Registered from `src/webmcp.ts` via `document.modelContext.registerTool()`:
 
@@ -33,8 +33,10 @@ Registered from `src/webmcp.ts` via `document.modelContext.registerTool()`:
 | `reorder_day` | Re-order a day (e.g. geographically) — **refuses to move 🔒 locked items and explains why** | final order + conflicts |
 | `find_conflicts` | Run the app's deterministic schedule audit | conflict pairs + budget overage |
 | `get_budget_summary` | Full money picture | totals, per-day, by category, remaining |
+| `set_trip_budget` | Change the total budget (with a reason, shown to the human) | previous/new budget + over/under status |
 
 Design notes:
+- **Both WebMCP APIs in one app.** `set_trip_budget` is also a real HTML `<form>` carrying the spec's proposed **declarative** attributes (`toolname`, `tooldescription`, `toolparamdescription`, `toolautosubmit`) — see `src/components/BudgetForm.tsx`. Today's agents get it via the imperative registration; browsers that ship the declarative API expose the same form to agents automatically.
 - **Agents cannot lock or unlock.** Locking is a human-only control — the collaboration contract. `reorder_day` validates locked positions and returns a human-readable refusal.
 - **Every mutating tool returns the post-state** (schedule, conflicts, budget), so one agent turn = one verified change.
 - **No backend, no API keys.** The browsing agent *is* the AI. Waypoint is a static site — the whole intelligence comes from the agent in the loop.
@@ -56,6 +58,7 @@ npm run build      # static build in dist/
 ## Architecture (for judges in a hurry)
 
 - `src/webmcp.ts` — **the file that matters.** Tool definitions, JSON-Schema `inputSchema`s, lock enforcement, and the shared implementations (also used by the simulator).
+- `src/components/BudgetForm.tsx` — the **declarative-API** form: a real `<form>` with the spec's proposed tool attributes, doubling as the visible budget control.
 - `src/store.tsx` — pure reducer trip state + localStorage. The tool layer applies actions synchronously so a tool's return value always reflects its own change.
 - `src/utils.ts` — deterministic conflict detection & budget math (the "app does math" half).
 - `src/components/` — the human's board: drag-and-drop day columns, inline editing, lock toggles, conflict badges, and the shared activity feed.

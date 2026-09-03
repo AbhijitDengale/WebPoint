@@ -7,6 +7,7 @@ import { setupWebMCP } from "./webmcp";
 import { Header } from "./components/Header";
 import { DayBoard, useConflictedIds } from "./components/DayBoard";
 import { AgentFeed } from "./components/AgentFeed";
+import { BudgetForm } from "./components/BudgetForm";
 import { SimPanel } from "./components/SimPanel";
 
 export default function App() {
@@ -50,6 +51,9 @@ function TripApp() {
       },
       reorderDay: (dayId, orderedIds, actor) => {
         apply({ type: "REORDER_DAY", tripDayId: dayId, orderedIds, actor });
+      },
+      setBudget: (value) => {
+        apply({ type: "SET_BUDGET", budget: value });
       },
       log: (actor, tool, detail) => dispatch({ type: "LOG", entry: { actor, tool, detail } }),
     };
@@ -116,7 +120,8 @@ function TripApp() {
           </div>
           <DayBoard conflictedIds={conflictedIds} />
         </main>
-        <div className="lg:h-[calc(100vh-65px)]">
+        <div className="flex w-full shrink-0 flex-col lg:h-[calc(100vh-65px)] lg:w-[340px]">
+          <BudgetForm />
           <AgentFeed />
         </div>
       </div>

@@ -35,6 +35,7 @@ export interface Bridge {
   updateActivity(id: string, changes: Partial<Activity>, actor: "human" | "agent"): boolean;
   removeActivity(id: string, actor: "human" | "agent"): boolean;
   reorderDay(dayId: string, orderedIds: string[], actor: "human" | "agent"): void;
+  setBudget(value: number): void;
   log(actor: "human" | "agent" | "system", tool: string, detail: string): void;
 }
 
@@ -296,6 +297,31 @@ const impls: Record<string, ToolImpl> = {
       ...b,
     };
   },
+
+  set_trip_budget: (bridge, input) => {
+    const state = bridge.getState();
+    const prev = state.trip.budget;
+    const value = Math.round(Number(input.budget));
+    if (!Number.isFinite(value) || value <= 0) return { ok: false, message: "budget must be a positive number." };
+    const reason = input.reason ? String(input.reason) : "";
+    if (value === prev) {
+      return { ok: true, message: `Budget is already ${fmtMoney(value, state.trip.currency)}.`, budget: budgetView(state) };
+    }
+    bridge.setBudget(value);
+    const after = bridge.getState();
+    bridge.log(
+      "agent",
+      "set_trip_budget",
+      `changed budget ${fmtMoney(prev, state.trip.currency)} → ${fmtMoney(value, state.trip.currency)}${reason ? ` — ${reason}` : ""}`
+    );
+    const b = budgetSummary(after);
+    return {
+      ok: true,
+      message: `Budget set to ${fmtMoney(value, state.trip.currency)} (was ${fmtMoney(prev, state.trip.currency)}). Planned spend of ${fmtMoney(b.plannedTotal, b.currency)} is now ${b.overBudget ? "OVER budget" : "within budget"} with ${fmtMoney(b.remaining, b.currency)} left.`,
+      previousBudget: prev,
+      budget: budgetView(after),
+    };
+  },
 };
 
 export const TOOL_NAMES = Object.keys(impls);
@@ -421,6 +447,19 @@ export function buildTools(bridge: Bridge): ModelContextTool[] {
         "Get the trip budget breakdown: total planned spend vs budget, remaining amount, per-day totals and spend by category. Use it when the human asks about money or before adding expensive activities.",
       inputSchema: inputSchema({}, []),
       execute: (input) => impls.get_budget_summary(bridge, input),
+    },
+    {
+      name: "set_trip_budget",
+      description:
+        "Change the trip's total budget — the human sees the change instantly on their budget bar. Only use it when the human agrees, and ALWAYS include a short reason (shown to them). Returns the new budget status so you can confirm whether planned spend now fits.",
+      inputSchema: inputSchema(
+        {
+          budget: { type: "number", description: "New total budget amount (positive number)." },
+          reason: { type: "string", description: "Short reason for the change, shown to the human." },
+        },
+        ["budget"]
+      ),
+      execute: (input) => impls.set_trip_budget(bridge, input),
     },
   ];
 }
